@@ -24,7 +24,7 @@ $(document).ready(function () {
 
 
   $("#CallButtonId").click(function () {
-    debugger;
+ 
     $.ajax({
       type: "POST",
       url: "/call",
@@ -39,6 +39,9 @@ $(document).ready(function () {
         debugger;
         alert("some error");
         
+      },
+      complete: function (data) {
+        debugger;
       }
     });
 

@@ -44,8 +44,9 @@ namespace ssoiframe.Controllers
         response.EnsureSuccessStatusCode();
         var body = await response.Content.ReadAsStringAsync();
         Console.WriteLine(body);
+        return Ok(response.StatusCode);
       }
-      return Ok();
+      
     }
 
 
