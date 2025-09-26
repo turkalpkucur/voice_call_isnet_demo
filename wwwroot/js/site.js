@@ -9,13 +9,19 @@ $(document).ready(function () {
 
 
 
-    var iframe = document.getElementById("IsnetLoginIframeId");
+
     debugger;
 
 
+    let iframe = document.getElementById("IsnetLoginIframeId");
 
-    var ifrm = document.getElementById('IsnetLoginIframeId');
-    ifrm = (ifrm.contentWindow) ? ifrm.contentWindow : (ifrm.contentDocument.document) ? ifrm.contentDocument.document : ifrm.contentDocument;
+    // iframe'in içindeki document
+    let iframeDoc = iframe.contentDocument;
+
+    // örnek: input'u seç
+    let input = iframeDoc.querySelector("input[type='text']");
+
+
 
     debugger;
 
