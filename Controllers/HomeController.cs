@@ -1,6 +1,7 @@
+using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Net.Http.Headers;
-
 namespace ssoiframe.Controllers
 {
   public class HomeController : Controller
@@ -48,6 +49,86 @@ namespace ssoiframe.Controllers
       }
       
     }
+
+
+    [HttpPost]
+    public async Task<IActionResult> GetControls()
+    {
+
+      string url = "https://mini.istecagrimerkezi.com";
+
+      using var httpClient = new HttpClient();
+      string html = await httpClient.GetStringAsync(url);
+
+      // HtmlAgilityPack ile parse et
+      var htmlDoc = new HtmlDocument();
+      htmlDoc.LoadHtml(html);
+
+      // Örnek: input[name='Kullanýcý Adý'] alanýný bul
+      var inputNode = htmlDoc.DocumentNode.SelectSingleNode("//input[@type='text']");
+      if (inputNode != null)
+      {
+        Console.WriteLine("Placeholder: " + inputNode.GetAttributeValue("placeholder", ""));
+      }
+      else
+      {
+        Console.WriteLine("Input bulunamadý.");
+      }
+
+      return Ok();
+
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> Login()
+    {
+
+
+      var handler = new HttpClientHandler
+      {
+        UseCookies = true,
+        CookieContainer = new CookieContainer()
+      };
+
+      using var client = new HttpClient(handler);
+
+      // Login endpoint (iframe formun action'ý)
+      string loginUrl = "https://mini.istecagrimerkezi.com/login";
+
+      // Gönderilecek form verisi
+      var formData = new FormUrlEncodedContent(new[]
+      {
+            new KeyValuePair<string, string>("username", "turkalp.kucur@infotec"),
+            new KeyValuePair<string, string>("password", "Wease@34")
+        });
+
+      // POST isteði
+      var response = await client.GetAsync(loginUrl+"?username:turkalp.kucur@infotec&password:Wease@34");
+
+      if (response.IsSuccessStatusCode)
+      {
+        Console.WriteLine("Login baþarýlý!");
+
+        // Cookie veya token saklanýr
+        var cookies = handler.CookieContainer.GetCookies(new Uri(loginUrl));
+        foreach (Cookie cookie in cookies)
+        {
+          Console.WriteLine($"Cookie: {cookie.Name} = {cookie.Value}");
+        }
+
+        // Örnek: login sonrasý baþka sayfaya eriþim
+        var protectedPage = await client.GetStringAsync("https://mini.istecagrimerkezi.com/dashboard");
+        Console.WriteLine(protectedPage.Substring(0, 200)); // ilk 200 karakteri yaz
+      }
+      else
+      {
+        Console.WriteLine("Login baþarýsýz: " + response.StatusCode);
+      }
+
+      return Ok();
+    }
+
 
 
   }
